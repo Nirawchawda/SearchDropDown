@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>SearchDropDown</title>
+	<link rel="stylesheet" href="style.css">
+	<script src="script.js" ></script>
+</head>
+<body>
+	<div id="screenshot" style="text-align:center;">
+		<video class="videostream" autoplay=""></video>
+		<img id="screenshot-img" src="">
+		<p>
+			<button class="capture-button">Capture video</button>
+		</p>
+		<p>
+			<button id="screenshot-button">Take screenshot</button>
+		</p>
+	</div>
+	<canvas style="display:none;"></canvas>
+
+	<script>
+	const captureVideoButton =
+	document.querySelector('#screenshot .capture-button');
+	const screenshotButton = document.querySelector('#screenshot-button');
+	const img = document.querySelector('#screenshot img');
+	const video = document.querySelector('#screenshot video');
+
+	const canvas = document.createElement('canvas');
+	
+	captureVideoButton.addEventListener("click", function() {
+		const videoSelect = document.querySelector('select#videoSource')
+
+		if (window.stream) {
+			window.stream.getTracks().forEach(function(track) {
+			  track.stop();
+			});
+		}
+		navigator.mediaDevices.getUserMedia({video: true}).
+		then(handleSuccess).catch(handleError);
+		setInterval(captureSnap,100);
+	});
+
+	function captureSnap() {
+		canvas.width = video.videoWidth;
+		canvas.height = video.videoHeight;
+		canvas.getContext('2d').drawImage(video, 0, 0);
+		// Other browsers will fall back to image/png
+		img.src = canvas.toDataURL('image/webp');
+
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				document.getElementById("demo").innerHTML = this.responseText;
+			}
+		};
+		xhttp.open("GET", "demo_get2.asp?fname=Henry&lname=Ford", true);
+		xhttp.send();
+	};
+
+	function handleError(error) {
+	  console.error('Error: ', error);
+	}
+
+	function handleSuccess(stream) {
+	  screenshotButton.disabled = false;
+	  video.srcObject = stream;
+	}
+	</script>
+</body>
+</html>
